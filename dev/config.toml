@@ -1,0 +1,46 @@
+[net]
+# nile
+wallet = "47.252.19.181:50051"
+wallet_solidity = "47.252.19.181:50061"
+show = "https://nile.tronscan.org"
+
+[keys]
+enable = false
+number = 100
+
+[balance]
+enable = true
+address = ["TD5RcMbom6kZRWcuLtxg6aJQimG1Qq2mVs","TSgmhHZ9WLEQ67eWWzGvTUf3u8YGj9AZV5"]
+[balance.trc10]
+enable = true
+show_all = true
+ids = ["1000016"]
+[balance.trc20]
+enable = true
+assets = ["TNuoKL1ni8aoshfFL1ASca1Gou9RXwAzfn BTT","TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3 JST","TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL USDJ","TU2T8vpHZhCNY8fXGVaHyeZrKm8s6HEXWe WINK"]
+
+[key_pair]
+TD5RcMbom6kZRWcuLtxg6aJQimG1Qq2mVs = "<hex private key>"
+TSgmhHZ9WLEQ67eWWzGvTUf3u8YGj9AZV5 = "<hex private key>"
+
+[[transfer.trx]]
+enable = false
+from = "TD5RcMbom6kZRWcuLtxg6aJQimG1Qq2mVs"
+to = "TSgmhHZ9WLEQ67eWWzGvTUf3u8YGj9AZV5"
+amount = "7743280"
+
+[[transfer.trc10]]
+enable = false
+from = "TSgmhHZ9WLEQ67eWWzGvTUf3u8YGj9AZV5"
+to = "TD5RcMbom6kZRWcuLtxg6aJQimG1Qq2mVs"
+asset = "1000016"
+amount = "12321"
+
+[[transfer.trc20]]
+enable = false
+from = "TSgmhHZ9WLEQ67eWWzGvTUf3u8YGj9AZV5"
+to = "TD5RcMbom6kZRWcuLtxg6aJQimG1Qq2mVs"
+asset = "TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL"
+amount = "12306"
+fee_limit = 100000000
+

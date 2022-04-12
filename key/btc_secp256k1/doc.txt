@@ -1,0 +1,4 @@
+github.com/btcsuite/btcd
+
+tag: v0.22.0-beta
+commit: 63438c6d3661a7dec09013f7731035abdf1eb4bc
