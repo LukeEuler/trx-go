@@ -155,7 +155,7 @@ func transferTrc20(tf config.Transfr) {
 	}
 	toHex := hex.EncodeToString(toBytes)
 
-	ab := LeftPadBytes(amount.Bytes(), 32)
+	ab := common.LeftPadBytes(amount.Bytes(), 32)
 
 	data := trc20TransferMethodSignature + "0000000000000000000000000000000000000000000000000000000000000000"[len(toHex)-2:] + toHex[2:]
 	data += hex.EncodeToString(ab)
@@ -187,18 +187,6 @@ func transferTrc20(tf config.Transfr) {
 	tx.Txid = hash
 
 	signAndBroadcast(tx, key)
-}
-
-// LeftPadBytes zero-pads slice to the left up to length l.
-func LeftPadBytes(slice []byte, l int) []byte {
-	if l <= len(slice) {
-		return slice
-	}
-
-	padded := make([]byte, l)
-	copy(padded[l-len(slice):], slice)
-
-	return padded
 }
 
 func signAndBroadcast(tx *api.TransactionExtention, key string) {

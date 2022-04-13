@@ -1,42 +1,47 @@
 package key
 
 import (
+	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"io"
 	"math/big"
 
 	"github.com/pkg/errors"
 	"github.com/shengdoushi/base58"
 
+	"github.com/LukeEuler/trx-go/common"
 	btcSecp256k1 "github.com/LukeEuler/trx-go/key/btc_secp256k1"
 )
 
 type KeyPair struct {
-	private []byte
-	address string
+	priv *ecdsa.PrivateKey
 }
 
-func NewKey() *KeyPair {
-	bs := make([]byte, 32)
-	_, _ = io.ReadFull(rand.Reader, bs)
-	return &KeyPair{
-		private: bs,
-	}
+func NewKey() (*KeyPair, error) {
+	key, err := ecdsa.GenerateKey(btcSecp256k1.S256(), rand.Reader)
+	return &KeyPair{priv: key}, errors.WithStack(err)
 }
 
 func NewKeyFromBytes(bs []byte) (*KeyPair, error) {
 	if len(bs) != 32 {
 		return nil, errors.New("invalid bytes")
 	}
-	return &KeyPair{
-		private: bs,
-	}, nil
+	curve := btcSecp256k1.S256()
+	x, y := curve.ScalarBaseMult(bs)
+	priv := &ecdsa.PrivateKey{
+		PublicKey: ecdsa.PublicKey{
+			Curve: curve,
+			X:     x,
+			Y:     y,
+		},
+		D: new(big.Int).SetBytes(bs),
+	}
+	return &KeyPair{priv: priv}, nil
 }
 
-func NewKeyFromHex(raw string) (*KeyPair, error) {
-	bs, err := hex.DecodeString(raw)
+func NewKeyFromHex(hexKey string) (*KeyPair, error) {
+	bs, err := hex.DecodeString(hexKey)
 	if err != nil {
 		return nil, err
 	}
@@ -44,29 +49,23 @@ func NewKeyFromHex(raw string) (*KeyPair, error) {
 }
 
 func (k *KeyPair) PrivateKey() string {
-	return hex.EncodeToString(k.private)
+	return hex.EncodeToString(common.LeftPadBytes(k.priv.D.Bytes(), 32))
 }
 
 func (k *KeyPair) Address() string {
-	if len(k.address) != 0 {
-		return k.address
-	}
-	private, _ := btcSecp256k1.PrivKeyFromBytes(btcSecp256k1.S256(), k.private)
-	privKey := private.ToECDSA()
-
-	address := PubkeyToEthAddressBytes(privKey.PublicKey)
+	bs := PubkeyToEthAddressBytes(k.priv.PublicKey)
 
 	addressTron := make([]byte, 0)
 	addressTron = append(addressTron, TronBytePrefix)
-	addressTron = append(addressTron, address...)
+	addressTron = append(addressTron, bs...)
 
+	var address string
 	if addressTron[0] == 0 {
-
-		k.address = new(big.Int).SetBytes(addressTron).String()
+		address = new(big.Int).SetBytes(addressTron).String()
 	} else {
-		k.address = EncodeCheck(addressTron)
+		address = EncodeCheck(addressTron)
 	}
-	return k.address
+	return address
 }
 
 const (

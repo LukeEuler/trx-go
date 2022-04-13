@@ -3,6 +3,8 @@ package tg
 import (
 	"fmt"
 
+	"github.com/LukeEuler/dolly/log"
+
 	"github.com/LukeEuler/trx-go/config"
 	"github.com/LukeEuler/trx-go/key"
 )
@@ -13,7 +15,10 @@ func NewKeys() {
 		return
 	}
 	for i := 0; i < conf.Keys.Number; i++ {
-		k := key.NewKey()
+		k, err := key.NewKey()
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Printf("%s %s\n", k.PrivateKey(), k.Address())
 	}
 }
